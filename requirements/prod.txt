@@ -1,0 +1,6 @@
+# Production dependencies for Python 3.12
+
+-r base.txt
+
+gunicorn==21.2.0
+python-multipart==0.0.6

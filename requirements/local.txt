@@ -1,0 +1,13 @@
+# Local development dependencies for Python 3.12
+# FIXED: seaborn==0.13.0 (correct version)
+
+-r dev.txt
+-r prod.txt
+
+jupyter==1.0.0
+notebook==7.0.6
+ipykernel==6.27.1
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.18.0
+httpie==3.1.0
