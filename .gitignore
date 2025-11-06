@@ -4,6 +4,8 @@ env/
 ENV/
 .venv
 .ENV
+venv.bak/
+env.bak/
 
 # Python
 __pycache__/
@@ -27,6 +29,8 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
 
 # Testing
 .pytest_cache/
@@ -34,6 +38,10 @@ MANIFEST
 htmlcov/
 .tox/
 .hypothesis/
+*.cover
+.nox/
+coverage.xml
+*.cover
 
 # IDE
 .vscode/
@@ -43,6 +51,11 @@ htmlcov/
 *~
 .DS_Store
 *.iml
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # Environment
 .env
@@ -61,24 +74,39 @@ yarn-debug.log*
 *.sqlite
 *.sqlite3
 db.sqlite3
+dump.rdb
 
 # ML Models
 models/*.pkl
 models/*.joblib
 models/*.h5
+models/*.pth
 
 # Temporary files
 tmp/
 temp/
 *.tmp
 .cache/
+.temp/
 
 # OS
 .DS_Store
 Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Node (if using any JS tools)
+node_modules/
+npm-debug.log
+yarn-error.log
 
 # Project-specific
 config/secrets.yaml
+config/secrets.yml
 data/raw/
 data/processed/
 notebooks/.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Docker
+.dockerignore
