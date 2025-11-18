@@ -7,7 +7,7 @@ Phase 1: Foundation
 
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import List, Optional
 from src.events.event_models import (
     UserEvent, PurchaseEvent, VideoWatchEvent, ClickEvent, SearchEvent,
@@ -97,7 +97,7 @@ class UserEventGenerator:
         
         if timestamp is None:
             # Add some randomness: event from last 24 hours
-            timestamp = datetime.utcnow() - timedelta(seconds=random.randint(0, 86400))
+            timestamp = datetime.now(UTC) - timedelta(seconds=random.randint(0, 86400))
         
         base_event = {
             "user_id": user_id,
@@ -215,7 +215,7 @@ class UserEventGenerator:
         events = []
         
         # Sessions typically start sometime and last a while
-        session_start = datetime.utcnow() - timedelta(hours=random.randint(1, 24))
+        session_start = datetime.now(UTC) - timedelta(hours=random.randint(1, 24))
         
         for i in range(event_count):
             # Spread events across the session duration (1 event every ~5 minutes)
@@ -293,7 +293,7 @@ class UserEventGenerator:
             "unusual_time"
         ])
         
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(UTC)
         
         if anomaly_type == "high_value_purchase":
             # Extremely high-value purchase

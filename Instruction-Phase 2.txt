@@ -1,0 +1,98 @@
+Phase 2 steps for execution 
+
+-> source venv/bin/activate
+-> pip install -r requirements/local.txt
+-> docker-compose up -d
+(Wait for 5-10 mins )
+-> make db-init [ will give error ]
+-> docker ps | grep postgres
+# 2. Make sure PostgreSQL is healthy
+-> docker ps
+# postgres should show: Up X seconds (healthy)
+# 3. Test connection directly
+-> psql postgresql://analytics_user:analytics_pass@localhost:5432/user_analytics -c "SELECT 1"
+# Should return: 1
+-> python -c "from src.database.connection import init_db; init_db()"
+```
+
+Should show:
+```
+✅ Database initialized successfully
+Tables: users, user_events, user_stats, dead_letter_queu
+
+# Terminal 1:
+-> python -m src.consumer.user_event_consumer
+
+# Terminal 2:
+-> python -m src.producer.user_event_producer --events 50 --rate 5
+
+-> for testing use
+for specific folders/files:
+pytest tests/test_consumer/test_kafka_consumer_service.py -v
+pytest --cov=src --cov-report=term-missing
+
+
+for the full project:
+
+pytest -v
+pytest --cov=src --cov-report=term-missing
+
+-------------------------------------------------------------------------------------------------------------------------------------
+Direct
+
+# Stop and remove old container
+-> docker-compose down 
+
+# Start fresh
+-> docker-compose up -d 
+
+# Wait 10 seconds
+sleep 10
+
+# Try again
+python -c "from src.database.connection import init_db; init_db()"
+
+
+
+Container	Purpose
+postgres	Stores all your analytics data (users, user_events, user_stats, dead_letter_queue). This is the persistence layer.
+zookeeper	Coordinates Kafka brokers (keeps track of topics, partitions, consumer groups). Required for Kafka to run.
+kafka	    Message broker. Producer sends events here, consumer reads them. Core of your pipeline.
+kafka-ui	Web interface to inspect Kafka topics, partitions, and messages. Useful for debugging.
+prometheus	Metrics collection system. Scrapes metrics from Kafka, Zookeeper, Postgres, and your apps if exporters are configured.
+grafana	    Visualization layer. Connects to Prometheus and lets you build dashboards and alerts.
+
+
+NOTE to follow:
+
+issue now is why coverage says:
+
+Code
+Module src/consumer/kafka_consumer_service.py was never imported
+No data was collected
+🔎 Why Coverage Shows “Never Imported”
+Coverage only tracks files that are actually imported and executed during the test run. In your case:
+
+Your tests import KafkaConsumerService from src.consumer.kafka_consumer_service. ✅
+
+But when you run coverage with:
+
+bash
+pytest --cov=src/consumer/kafka_consumer_service.py
+you’re pointing coverage at a file path, not the module name. Coverage expects Python module imports, not raw file paths.
+
+So coverage thinks the file was never imported, even though it was.
+
+✅ How to Fix It
+Run coverage against the package/module, not the file path:
+
+bash
+pytest --cov=src/consumer --cov-report=term-missing
+or for the whole project:
+
+bash
+pytest --cov=src --cov-report=term-missing
+This way, coverage tracks all modules under src/consumer/, including kafka_consumer_service.py.
+
+VEry Imp
+https://copilot.microsoft.com/chats/9PPxtw8MB1qJzy4BmE67J

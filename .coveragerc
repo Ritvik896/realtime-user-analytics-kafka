@@ -1,0 +1,8 @@
+[run]
+# Omit entry points and placeholder modules from coverage
+omit =
+    src/consumer/user_event_consumer.py
+    src/api/*
+    src/ml/*
+    src/stream_processor/*
+    src/utils/*

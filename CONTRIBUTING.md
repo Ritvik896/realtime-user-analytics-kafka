@@ -1,327 +1,451 @@
-# Contributing to Real-time User Analytics
+🤝 How to Contribute
+This project welcomes contributions! Whether you're fixing bugs, adding features, or improving documentation, here's how to get involved.
 
-Thank you for your interest in contributing! This guide will help you get started.
+🏗️ Development Setup
+Prerequisites
 
-## Development Workflow
+Python 3.12+
+Docker & Docker Compose
+Git
+Make (optional)
 
-### 1. Setup Development Environment
+Initial Setup
+bash# 1. Clone repository
+git clone https://github.com/Ritvik896/realtime-user-analytics-kafka.git
+cd realtime-user-analytics-kafka
 
-```bash
-# Create virtual environment
+# 2. Create virtual environment
 python3 -m venv venv
-source venv/bin/activate  # Linux/macOS
-# or
-venv\Scripts\activate  # Windows
+source venv/bin/activate
 
-# Install dependencies
+# 3. Install dependencies
 pip install -r requirements/local.txt
 
-# Setup pre-commit hooks (optional)
-pre-commit install
-```
+# 4. Start Docker services
+docker-compose up -d
 
-### 2. Git Workflow - Phase-Based Development
+# 5. Initialize database
+make db-init
 
-We follow a phase-based branching strategy:
+# 6. Verify setup
+make test
 
-#### Create Feature Branch
-```bash
-# Always branch from main
-git checkout main
-git pull origin main
+🌿 Git Workflow
+Creating a Feature Branch
+bash# 1. Update master
+git checkout master
+git pull origin master
 
-# Create phase branch
-git checkout -b feature/phase-X-name
+# 2. Create feature branch
+# Format: feature/phase-X-description or fix/description
+git checkout -b feature/phase-2-consumer-database
 
-# Example:
-git checkout -b feature/phase-2-consumer
-```
+# 3. Verify branch
+git branch
+# * feature/phase-2-consumer-database
+Committing Changes
+bash# 1. Check status
+git status
 
-#### Make Commits
-Follow commit message conventions:
+# 2. Stage changes
+git add .
 
-```
-<type>(<scope>): <subject>
+# 3. Commit with meaningful message
+git commit -m "feat(phase-2): implement consumer with offset management
 
-<body>
+- Add Kafka consumer service with manual offset commits
+- Implement event storage with deduplication
+- Add real-time statistics aggregation
+- Create 50+ unit tests
+- Add Dead Letter Queue for error handling"
 
-<footer>
-```
+# 4. Push to remote
+git push -u origin feature/phase-2-consumer-database
+Commit Message Format
+Follow conventional commits:
+feat(category): short description
 
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation
-- `chore`: Maintenance, dependencies
-- `test`: Tests
-- `refactor`: Code refactoring
+Longer explanation of what changed and why.
+- Bullet point 1
+- Bullet point 2
 
-**Examples:**
-```bash
-git commit -m "feat(consumer): Add Kafka consumer with error handling
+Fixes #123
+Types:
 
-- Implement reliable message consumption
-- Add batch processing
-- Include comprehensive logging"
+feat: New feature
+fix: Bug fix
+docs: Documentation
+test: Tests
+refactor: Code refactoring
+perf: Performance
+chore: Build, deps, etc.
 
-git commit -m "chore(deps): Update kafka-python to 2.0.2"
 
-git commit -m "docs: Add Phase 2 setup guide"
-```
+📋 Before Submitting PR
+1. Code Quality
+bash# Format code
+make format
 
-#### Push and Create PR
-```bash
-# Push feature branch
-git push -u origin feature/phase-X-name
-
-# Create Pull Request on GitHub
-# Fill in title and description
-# Link to any related issues
-```
-
-#### Merge to Main
-```bash
-# After review and testing:
-# Merge via GitHub UI (Recommended)
-# Or locally:
-git checkout main
-git pull origin main
-git merge feature/phase-X-name
-git push origin main
-
-# Delete feature branch
-git branch -d feature/phase-X-name
-git push origin --delete feature/phase-X-name
-```
-
-### 3. Code Quality
-
-#### Linting
-```bash
-# Check code style
-flake8 src tests
+# Check linting
+make lint
 
 # Type checking
 mypy src
 
-# Additional linting
-pylint src
-```
+# All tests pass
+make test
+2. Documentation
 
-#### Formatting
-```bash
-# Format code
-black src tests
+ Update docstrings
+ Update README.md if needed
+ Add comments for complex logic
+ Update relevant docs in docs/
 
-# Sort imports
-isort src tests
-```
-
-#### Run Before Committing
-```bash
-# Run tests
+3. Testing
+bash# Unit tests
 pytest tests/ -v
 
-# Check formatting
-black --check src tests
+# With coverage
+pytest tests/ --cov=src
 
-# Run linting
-flake8 src
-```
+# Integration test
+make pipeline-test
 
-### 4. Testing
+# Target: 80%+ coverage
 
-#### Write Tests
-- Place tests in `tests/` folder
-- Use pytest framework
-- One test file per module
+🔀 Creating a Pull Request
+On GitHub
 
-#### Run Tests
-```bash
-# Run all tests
-pytest tests/ -v
+Go to repository
 
-# Run with coverage
-pytest tests/ -v --cov=src
-
-# Run specific test
-pytest tests/test_producer.py -v
-```
-
-## Phase Naming Convention
-
-| Phase | Branch Name | Focus |
-|-------|------------|-------|
-| 1 | `feature/phase-1-foundation` | Events, Producer, Docker |
-| 2 | `feature/phase-2-consumer` | Consumer, Database |
-| 3 | `feature/phase-3-stream-processor` | Stream Processing |
-| 4 | `feature/phase-4-api` | REST API |
-| 5 | `feature/phase-5-ml-integration` | ML Models |
-| 6 | `feature/phase-6-monitoring` | Monitoring, Grafana |
-| 7 | `feature/phase-7-testing-cicd` | Tests, CI/CD |
-
-## Requirements Management
-
-### Adding Dependencies
-
-1. Install package
-   ```bash
-   pip install new-package==1.2.3
-   ```
-
-2. Add to appropriate requirements file
-   - Core: `requirements/base.txt`
-   - Dev only: `requirements/dev.txt`
-   - Production only: `requirements/prod.txt`
-
-3. Update root requirements.txt by referencing structure
-
-4. Commit with message
-   ```bash
-   git commit -m "chore(deps): Add new-package==1.2.3 for feature X"
-   ```
-
-### Updating Dependencies
-
-```bash
-# Check outdated packages
-pip list --outdated
-
-# Update specific package
-pip install --upgrade package-name
-
-# Update requirements file
-pip freeze > requirements/frozen.txt
-
-# Commit
-git commit -m "chore(deps): Update package-name to X.Y.Z"
-```
-
-## Docker
-
-### Local Development
-```bash
-# Start services
-docker-compose up -d
-
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f <service>
-
-# Stop services
-docker-compose down
-```
-
-### After Code Changes
-```bash
-# Rebuild containers if needed
-docker-compose up -d --build
-
-# Restart specific service
-docker-compose restart kafka
-```
-
-## Documentation
-
-- Add docstrings to all functions and classes
-- Update README.md for major changes
-- Add new docs in `docs/` folder
-- Keep PHASES.md updated
-
-## Debugging Tips
-
-```bash
-# View Kafka topics
-docker exec kafka kafka-topics --list --bootstrap-server kafka:9092
-
-# View consumer groups
-docker exec kafka kafka-consumer-groups --list --bootstrap-server kafka:9092
-
-# Check database
-psql -h localhost -U analytics_user -d user_analytics
-
-# View logs
-docker-compose logs -f
-```
-
-## Common Issues
-
-### Virtual Environment Not Activating
-```bash
-# Windows PowerShell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-.\venv\Scripts\Activate.ps1
-```
-
-### Kafka Not Starting
-```bash
-# Check logs
-docker-compose logs kafka
-
-# Restart
-docker-compose restart kafka
-
-# Full reset
-docker-compose down -v
-docker-compose up -d
-```
-
-### Tests Failing
-```bash
-# Check if Docker is running
-docker-compose ps
-
-# Clear pytest cache
-rm -rf .pytest_cache
-
-# Run with verbose output
-pytest tests/ -vv -s
-```
-## Quick Reference Commands
-
-### One-Time Setup
-```bash
-python3.12 -m venv venv
-source venv/bin/activate
-pip install -r requirements/local.txt
-docker-compose up -d
-```
-
-### Daily Development
-```bash
-# Activate venv (do this first!)
-source venv/bin/activate
-
-# Run tests before committing
-pytest tests/ -v
-
-# Format code
-black src tests
-
-# Lint code
-flake8 src
-
-# Commit and push
-git add .
-git commit -m "feat(scope): description"
-git push origin feature/phase-X-name
-```
-
-### Docker Management
-```bash
-docker-compose ps          # Check status
-docker-compose logs -f     # View logs
-docker-compose restart     # Restart all
-docker-compose down        # Stop all
-```
+https://github.com/Ritvik896/realtime-user-analytics-kafka
 
 
-## Questions?
+Click "Pull requests" tab
+Click "New pull request"
+Select
 
-- Check docs/ folder for detailed guides
-- Look at existing code for examples
-- Ask in issues/PRs
+Base: master
+Compare: feature/phase-2-consumer-database
 
-Happy coding! 🚀
+
+Click "Create pull request"
+Fill in PR details
+
+markdown   # Title: Phase 2: Consumer & Database Storage
+   
+   ## Description
+   Implements Kafka consumer with exactly-once semantics and real-time statistics.
+   
+   ## Changes
+   - Adds consumer service with offset management
+   - Creates database models (User, Event, Stats, DLQ)
+   - Implements event storage and deduplication
+   - Adds real-time statistics aggregation
+   - Includes 50+ unit tests
+   
+   ## Testing
+   - All tests passing: `pytest tests/ -v`
+   - Integration test passing: `make pipeline-test`
+   - Coverage: 85%
+   
+   ## Checklist
+   - [x] Code formatted with Black
+   - [x] Tests passing
+   - [x] Documentation updated
+   - [x] No breaking changes
+   
+   Closes #N/A
+
+Request reviewers (if available)
+Wait for approval
+
+
+📝 Code Standards
+Python Style
+python# 1. Type hints required
+from typing import Dict, Optional, List
+
+def process_event(event_data: Dict[str, Any]) -> Optional[str]:
+    """Process event and return ID."""
+    pass
+
+# 2. Docstrings for functions
+def validate_event(event: Dict) -> bool:
+    """
+    Validate event data.
+    
+    Args:
+        event: Event dictionary
+    
+    Returns:
+        True if valid, False otherwise
+    
+    Example:
+        >>> validate_event({"user_id": "123"})
+        True
+    """
+    pass
+
+# 3. Comments for complex logic
+# Calculate running average to avoid storing all values
+old_avg = stats.avg_session_duration
+new_count = stats.total_events
+stats.avg_session_duration = (
+    (old_avg * (new_count - 1) + duration) / new_count
+)
+
+# 4. Constants in UPPER_CASE
+MAX_RETRIES = 3
+TIMEOUT_MS = 10000
+
+# 5. Private methods with _prefix
+def _internal_helper() -> None:
+    pass
+
+# 6. Imports organized
+# Standard library
+import os
+from datetime import datetime
+from typing import Dict
+
+# Third-party
+from sqlalchemy import create_engine
+from pydantic import BaseModel
+
+# Local
+from src.database.models import User
+File Organization
+python"""
+Module docstring describing purpose.
+
+Example:
+    Usage example here
+"""
+
+# 1. Imports (organized by type)
+# 2. Constants
+# 3. Helper functions
+# 4. Main classes
+# 5. Public functions
+
+🧪 Testing Standards
+Unit Test Requirements
+python# 1. Descriptive test names
+def test_validate_event_missing_required_fields():
+    """Test that validation fails when required fields missing."""
+    pass
+
+# 2. Arrange-Act-Assert pattern
+def test_store_event_creates_user():
+    # Arrange
+    event = {"user_id": "123", "event_id": "evt_001", ...}
+    
+    # Act
+    result = store_event(db, event)
+    
+    # Assert
+    assert result is not None
+    user = db.query(User).first()
+    assert user is not None
+
+# 3. Use fixtures
+@pytest.fixture
+def db_session():
+    """Create test database."""
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    SessionLocal = sessionmaker(bind=engine)
+    return SessionLocal()
+
+# 4. Test edge cases
+def test_negative_amount_rejected():
+    """Test that negative purchase amounts are rejected."""
+    pass
+
+def test_empty_event_rejected():
+    """Test that empty events are rejected."""
+    pass
+Test File Structure
+tests/
+├── __init__.py
+├── test_storage.py        # Storage tests
+├── test_consumer.py       # Consumer tests
+├── test_api.py            # API tests (Phase 4+)
+└── fixtures/
+    └── conftest.py        # Shared fixtures
+
+🐛 Bug Reports
+Creating a Bug Report
+When reporting bugs:
+
+Title: Concise description
+Version: Which version/phase?
+Steps to reproduce
+Expected behavior
+Actual behavior
+Error logs
+Environment
+
+Example:
+Title: Consumer crashes on invalid timestamp
+
+Steps:
+1. Start consumer
+2. Send event with timestamp "2024-01-32"
+3. Check logs
+
+Expected: Event logged to DLQ
+Actual: Consumer crashes with KeyError
+
+Error: KeyError: 'timestamp'
+
+📚 Documentation Standards
+Docstring Format
+pythondef function_name(param1: str, param2: int) -> bool:
+    """
+    Short description (one line).
+    
+    Longer description explaining what it does,
+    why you'd use it, and how to use it.
+    
+    Args:
+        param1: Description of param1
+        param2: Description of param2
+    
+    Returns:
+        Description of return value
+    
+    Raises:
+        ValueError: When validation fails
+        KeyError: When key not found
+    
+    Example:
+        >>> function_name("test", 123)
+        True
+        
+        >>> function_name("invalid", -1)
+        Traceback (most recent call last):
+            ...
+        ValueError: param2 must be positive
+    """
+    pass
+README Sections
+For new features, update README.md:
+
+Feature description
+Usage example
+API documentation (if applicable)
+Performance metrics
+Known limitations
+
+
+🔍 Code Review Checklist
+When reviewing PRs, check:
+Code Quality
+
+ Type hints present
+ Docstrings complete
+ Comments explain why, not what
+ No dead code
+ Error handling present
+
+Testing
+
+ Tests passing
+ Edge cases covered
+ Coverage ≥80%
+ Test names descriptive
+
+Performance
+
+ No N+1 queries
+ Connection pooling used
+ Efficient algorithms
+ No memory leaks
+
+Security
+
+ Input validation
+ SQL injection prevented
+ Secrets not in code
+ Proper error handling
+
+Documentation
+
+ README updated
+ Docstrings present
+ Examples provided
+ Breaking changes noted
+
+
+🚀 Deployment Process
+Staging Deployment
+bash# 1. Test on staging branch
+git checkout -b staging/test
+# Make changes
+make test
+
+# 2. Deploy to staging
+git push origin staging/test
+# CI/CD runs automated tests
+
+# 3. Manual testing
+# Test on staging environment
+
+# 4. Approve for production
+Production Deployment
+bash# 1. Tag release
+git tag v0.2.0
+git push origin v0.2.0
+
+# 2. Create release notes
+# Document changes, bug fixes, features
+
+# 3. Deploy to production
+# Manual or automated via CI/CD
+
+# 4. Monitor
+# Check logs, metrics, errors
+# Be ready to rollback if issues
+
+📞 Getting Help
+
+Questions: Review docs/ folder
+Issues: Check GitHub issues
+Code Review: Ask maintainers
+Architecture: See ARCHITECTURE.md
+
+
+🎯 Development Checklist
+Before each PR:
+
+ Code formatted: make format
+ Linting passed: make lint
+ Tests passing: make test
+ Type check: mypy src
+ Coverage ≥80%: pytest --cov
+ Docstrings added
+ README updated (if needed)
+ No breaking changes
+ Commit message follows conventions
+
+
+📊 Code Review SLA
+
+Priority: Critical (24h), High (48h), Normal (1 week)
+Approval: At least 1 maintainer
+Changes: Address all feedback
+Merge: Squash merge to keep history clean
+
+
+🤗 Community Guidelines
+
+Respectful: Assume good intentions
+Inclusive: Welcome all backgrounds
+Constructive: Helpful feedback only
+Collaborative: We're building together
+
+
+Thank you for contributing! 🎉
+Questions? Open an issue or start a discussion.

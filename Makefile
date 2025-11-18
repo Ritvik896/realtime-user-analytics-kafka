@@ -113,6 +113,44 @@ producer-specific-user:
 	python -m src.producer.user_event_producer --user-id user_00001 --events 100
 
 # ============================================================
+# Phase 2: Consumer & Database Targets
+# ============================================================
+
+consumer:
+	python -m src.consumer.user_event_consumer
+
+consumer-test:
+	python -m src.consumer.user_event_consumer --max-events 100
+
+consumer-docker:
+	docker-compose up consumer -d
+
+db-init:
+	python -c "from src.database.connection import init_db; init_db()"
+
+db-reset:
+	python -c "from src.database.connection import drop_db, init_db; drop_db(); init_db()"
+
+db-check:
+	python -c "from src.database.connection import check_db_health, get_db_stats; print('Health:', check_db_health()); print('Stats:', get_db_stats())"
+
+db-query:
+	psql postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+
+# ============================================================
+# Full Pipeline Testing
+# ============================================================
+
+pipeline-test: db-init
+	@echo "🚀 Starting full pipeline test..."
+	@echo "Terminal 1: Starting consumer..."
+	@python -m src.consumer.user_event_consumer --max-events 50 &
+	@sleep 3
+	@echo "Terminal 2: Starting producer..."
+	@python -m src.producer.user_event_producer --events 50 --rate 5
+	@echo "✅ Pipeline test complete"
+
+# ============================================================
 # Testing & Quality Targets
 # ============================================================
 
